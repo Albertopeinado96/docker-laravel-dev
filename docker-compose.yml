@@ -41,8 +41,11 @@ services:
       - "3306:3306"
     volumes:
       - ./mysql:/var/lib/mysql
-    env_file:
-      - env/mysql.env
+    environment:
+      - MYSQL_DATABASE=database
+      - MYSQL_USER=laravel
+      - MYSQL_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=secret
     networks:
       - laravel
 
@@ -71,7 +74,7 @@ services:
   composer:
     build:
       context: .
-      dockerfile: php/composer.dockerfile
+      dockerfile: composer.dockerfile
     container_name: ${COMPOSE_PROJECT_NAME}-composer
     volumes:
       - ./src:/var/www/html
