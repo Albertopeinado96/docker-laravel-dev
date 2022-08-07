@@ -1,10 +1,10 @@
-FROM nginx:stable-alpine
+FROM nginx:1.23-alpine
 
-ADD nginx/nginx.conf /etc/nginx/
-ADD nginx/default.conf /etc/nginx/conf.d/
+COPY nginx/nginx.conf /etc/nginx/
+COPY nginx/default.conf /etc/nginx/conf.d/
 
 RUN mkdir -p /var/www/html
 
-RUN addgroup -g 1000 laravel && adduser -G laravel -g laravel -s /bin/sh -D laravel
+RUN adduser -G www-data -g www-data -s /bin/sh -D www-data
 
-RUN chown laravel:laravel /var/www/html
+RUN chown www-data:www-data /var/www/html

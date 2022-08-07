@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   nginx:
     build:
@@ -6,10 +6,8 @@ services:
       dockerfile: nginx/nginx.dockerfile
     container_name: ${COMPOSE_PROJECT_NAME}-nginx
     restart: unless-stopped
-    tty: true
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - ./src:/var/www/html:delegated
     depends_on:
@@ -18,7 +16,7 @@ services:
       - mysql
       - mailhog
     networks:
-      - laravel
+      - internal
 
   php:
     build:
@@ -26,28 +24,26 @@ services:
       dockerfile: php/php.dockerfile
     container_name: ${COMPOSE_PROJECT_NAME}-php
     restart: unless-stopped
-    tty: true
     volumes:
       - ./src:/var/www/html:delegated
     networks:
-      - laravel
+      - internal
 
   mysql:
     image: mysql:8.0
     container_name: ${COMPOSE_PROJECT_NAME}-mysql
     restart: unless-stopped
-    tty: true
     ports:
       - "3306:3306"
     volumes:
       - ./mysql:/var/lib/mysql
     environment:
-      - MYSQL_DATABASE=database
-      - MYSQL_USER=laravel
-      - MYSQL_PASSWORD=secret
-      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=$MYSQL_DATABASE
+      - MYSQL_USER=$MYSQL_USER
+      - MYSQL_PASSWORD=$MYSQL_PASSWORD
+      - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
     networks:
-      - laravel
+      - internal
 
   redis:
     image: redis:alpine
@@ -56,35 +52,32 @@ services:
     ports:
       - "6379:6379"
     networks:
-      - laravel
+      - internal
 
   npm:
     image: node:16-alpine
     container_name: ${COMPOSE_PROJECT_NAME}-npm
     volumes:
-      - ./src:/var/www/html
+      - ./src:/var/www/html:delegated
     ports:
       - "3000:3000"
       - "3001:3001"
     working_dir: /var/www/html
-    entrypoint: [ 'npm' ]
+    entrypoint: [ "npm" ]
     networks:
-      - laravel
+      - internal
 
   composer:
-    build:
-      context: .
-      dockerfile: composer.dockerfile
+    image: composer:2
     container_name: ${COMPOSE_PROJECT_NAME}-composer
     volumes:
-      - ./src:/var/www/html
+      - ./src:/var/www/html:delegated
     working_dir: /var/www/html
     depends_on:
       - php
-    user: laravel
-    entrypoint: [ 'composer', '--ignore-platform-reqs' ]
+    entrypoint: [ "composer" ]
     networks:
-      - laravel
+      - internal
 
   artisan:
     build:
@@ -96,10 +89,9 @@ services:
     depends_on:
       - mysql
     working_dir: /var/www/html
-    user: laravel
-    entrypoint: [ 'php', '/var/www/html/artisan' ]
+    entrypoint: [ "php", "/var/www/html/artisan" ]
     networks:
-      - laravel
+      - internal
 
   mailhog:
     image: mailhog/mailhog:latest
@@ -108,12 +100,12 @@ services:
       - "1025:1025"
       - "8025:8025"
     networks:
-      - laravel
-
-networks:
-  laravel:
-    driver: bridge
+      - internal
 
 volumes:
   mysql:
     driver: local
+
+networks:
+  internal:
+    driver: bridge
