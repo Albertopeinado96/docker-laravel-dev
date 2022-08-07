@@ -29,6 +29,17 @@ services:
     networks:
       - internal
 
+  supervisor:
+    build:
+      context: .
+      dockerfile: supervisor/supervisor.dockerfile
+    container_name: ${COMPOSE_PROJECT_NAME}-supervisor
+    restart: unless-stopped
+    volumes:
+      - ./src:/var/www/html:delegated
+    networks:
+      - internal
+
   mysql:
     image: mysql:8.0
     container_name: ${COMPOSE_PROJECT_NAME}-mysql
