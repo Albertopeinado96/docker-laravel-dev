@@ -28,6 +28,8 @@ services:
       - ./src:/var/www/html:delegated
     networks:
       - internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   supervisor:
     build:
