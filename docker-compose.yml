@@ -39,6 +39,9 @@ services:
     restart: unless-stopped
     volumes:
       - ./src:/var/www/html:delegated
+    depends_on:
+      - php
+      - mysql
     networks:
       - internal
 
