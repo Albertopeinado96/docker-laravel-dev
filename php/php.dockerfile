@@ -1,10 +1,10 @@
-FROM php:8.1-fpm-alpine
+FROM php:8.2-fpm-alpine
 
 RUN docker-php-ext-install pdo pdo_mysql
 
-RUN apk add --no-cache $PHPIZE_DEPS \
-    && pecl install xdebug-3.1.0 \
-    && docker-php-ext-enable xdebug
+#RUN apk add --no-cache $PHPIZE_DEPS \
+#   && pecl install xdebug-3.1.0 \
+#   && docker-php-ext-enable xdebug
 
 RUN addgroup -g 1000 laravel && adduser -G laravel -g laravel -s /bin/sh -D laravel
 
